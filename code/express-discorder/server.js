@@ -1,13 +1,14 @@
-require("dotenv").config();
-const express = require("express");
-const axios = require("axios").default;
+require('dotenv').config()
+const express = require('express')
+const axios = require('axios').default
 
-const app = express();
-const port = 3000;
+const app = express()
+const port = 3000
 
-app.use(express.json());
+app.use(express.json())
 
-app.get("/", (req, res) => res.send(`
+app.get('/', (req, res) =>
+  res.send(`
   <html>
     <head><title>Success!</title></head>
     <body>
@@ -15,11 +16,17 @@ app.get("/", (req, res) => res.send(`
       <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" alt="Cool kid doing thumbs up" />
     </body>
   </html>
-`));
+`)
+)
 
-app.post("/github", (req, res) => {
-  const content = ":wave: Hi mom!";
-  const avatarUrl = "https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif";
+app.post('/github', (req, res) => {
+  // const content = ':wave: Hi mom!!!'
+  // const avatarUrl = "https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif";
+
+  const username = req.body.sender.login
+  const repoName = req.body.repository.name
+  const content = `:taco: :taco: ${username} just starred ${repoName} :rocket: :tada: :tada: :taco:`
+  const avatarUrl = req.body.sender.avatar_url
   axios
     .post(process.env.DISCORD_WEBHOOK_URL, {
       content: content,
@@ -31,20 +38,20 @@ app.post("/github", (req, res) => {
         },
       ],
     })
-    .then((discordResponse) => {
-      console.log("Success!");
-      res.status(204).send();
+    .then(discordResponse => {
+      console.log('Success!')
+      res.status(204).send()
     })
-    .catch((err) => console.error(`Error sending to Discord: ${err}`));
-});
+    .catch(err => console.error(`Error sending to Discord: ${err}`))
+})
 
 app.use((error, req, res, next) => {
   res.status(500)
-  res.send({error: error})
+  res.send({ error: error })
   console.error(error.stack)
   next(error)
 })
 
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
-);
+)
